@@ -54,52 +54,7 @@ class TrashGame {
         this.initializeHearts(); // Inicializar corações na primeira carga
         this.setColumnWidth();
         window.addEventListener('resize', () => this.setColumnWidth());
-        this.setupGyroToggleButton(); // Agora apenas configura o botão já existente
-    }
-
-    setupGyroToggleButton() {
-        const gyroBtn = document.getElementById('gyro-toggle-btn');
-        if (!gyroBtn) return;
-        this.gyroscopeActive = false; // Começa desativado
-        gyroBtn.textContent = 'Ativar Giroscópio';
-        gyroBtn.onclick = () => {
-            if (!this.gyroscopeActive) {
-                this.activateGyroscope();
-            } else {
-                this.deactivateGyroscope();
-            }
-        };
-    }
-
-    activateGyroscope() {
-        const gyroBtn = document.getElementById('gyro-toggle-btn');
-        if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
-            DeviceOrientationEvent.requestPermission().then(permissionState => {
-                if (permissionState === 'granted') {
-                    this.startGyroscope();
-                    this.gyroscopeActive = true;
-                    if (gyroBtn) gyroBtn.textContent = 'Desativar Giroscópio';
-                } else {
-                    alert('Permissão negada para usar o giroscópio');
-                }
-            }).catch(error => {
-                alert('Erro ao solicitar permissão do giroscópio');
-            });
-        } else {
-            this.startGyroscope();
-            this.gyroscopeActive = true;
-            if (gyroBtn) gyroBtn.textContent = 'Desativar Giroscópio';
-        }
-    }
-
-    deactivateGyroscope() {
-        this.gyroscopeActive = false;
-        const gyroBtn = document.getElementById('gyro-toggle-btn');
-        if (gyroBtn) gyroBtn.textContent = 'Ativar Giroscópio';
-        if (this._gyroListener) {
-            window.removeEventListener('deviceorientation', this._gyroListener);
-            this._gyroListener = null;
-        }
+        // Removido: this.setupGyroToggleButton();
     }
     
     bindEvents() {
@@ -155,8 +110,7 @@ class TrashGame {
             }
         });
         
-        // Controle por giroscópio
-        this.initGyroscope();
+        // Removido: this.initGyroscope();
     }
     
     startGame() {
@@ -547,220 +501,7 @@ class TrashGame {
         });
     }
     
-    initGyroscope() {
-        // Verificar se o dispositivo suporta giroscópio
-        if (window.DeviceOrientationEvent) {
-            // Solicitar permissão para acessar o giroscópio (iOS 13+)
-            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                // Adicionar botão para ativar giroscópio
-                this.addGyroscopeButton();
-            } else {
-                // Para dispositivos que não precisam de permissão
-                this.startGyroscope();
-            }
-        }
-    }
-    
-    addGyroscopeButton() {
-        const gyroBtn = document.createElement('button');
-        gyroBtn.id = 'gyro-btn';
-        gyroBtn.textContent = '🎮 Ativar Giroscópio';
-        gyroBtn.className = 'btn btn-secondary gyro-btn';
-        gyroBtn.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            display: none;
-        `;
-        
-        // Adicionar botão de ajuste de velocidade
-        const speedBtn = document.createElement('button');
-        speedBtn.id = 'speed-btn';
-        speedBtn.textContent = '⚙️ Velocidade';
-        speedBtn.className = 'btn btn-secondary speed-btn';
-        speedBtn.style.cssText = `
-            position: fixed;
-            top: 60px;
-            right: 20px;
-            z-index: 1000;
-            background: linear-gradient(45deg, #4ECDC4, #44A08D);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            display: none;
-        `;
-        
-        speedBtn.addEventListener('click', () => {
-            this.toggleGyroscopeSpeed();
-        });
-        
-        document.body.appendChild(speedBtn);
-        
-        gyroBtn.addEventListener('click', () => {
-            this.requestGyroscopePermission();
-        });
-        
-        document.body.appendChild(gyroBtn);
-        
-        // Mostrar apenas em dispositivos móveis
-        if (window.innerWidth <= 768) {
-            gyroBtn.style.display = 'block';
-            document.getElementById('speed-btn').style.display = 'block';
-        }
-    }
-    
-    requestGyroscopePermission() {
-        DeviceOrientationEvent.requestPermission()
-            .then(permissionState => {
-                if (permissionState === 'granted') {
-                    this.startGyroscope();
-                    document.getElementById('gyro-btn').style.display = 'none';
-                } else {
-                    alert('Permissão negada para usar o giroscópio');
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao solicitar permissão do giroscópio:', error);
-            });
-    }
-    
-    startGyroscope() {
-        if (this._gyroListener) return; // Evita múltiplos listeners
-        this.lastGyroTime = 0;
-        this.gyroMoveCount = 0;
-        this._gyroListener = (event) => {
-            if (!this.gameRunning || this.gamePaused || !this.gyroscopeActive) return;
-            
-            const now = Date.now();
-            
-            // Definir intervalo baseado no modo de velocidade
-            let updateInterval = 200; // Padrão
-            if (this.gyroSpeedMode === 'fast') {
-                updateInterval = 100; // Mais rápido
-            } else if (this.gyroSpeedMode === 'slow') {
-                updateInterval = 300; // Mais lento
-            }
-            
-            if (now - this.lastGyroTime < updateInterval) return;
-            this.lastGyroTime = now;
-            
-            const gamma = event.gamma; // Inclinação lateral (-90 a 90)
-            
-            // Definir sensibilidade do giroscópio baseada no tamanho da tela
-            const screenWidth = window.innerWidth;
-            let sensitivity = 25; // Aumentado para ser menos sensível
-            
-            if (screenWidth <= 480) {
-                sensitivity = 20; // Menos sensível em telas pequenas
-            } else if (screenWidth <= 768) {
-                sensitivity = 22; // Sensibilidade média em tablets
-            } else {
-                sensitivity = 25; // Sensibilidade reduzida em telas grandes
-            }
-            
-            if (gamma > sensitivity) {
-                // Inclinar para direita
-                this.gyroMoveCount++;
-                
-                // Definir contador baseado no modo de velocidade
-                let requiredCount = 2; // Padrão
-                if (this.gyroSpeedMode === 'fast') {
-                    requiredCount = 1; // Move imediatamente
-                } else if (this.gyroSpeedMode === 'slow') {
-                    requiredCount = 3; // Move mais lentamente
-                }
-                
-                if (this.gyroMoveCount >= requiredCount) {
-                    this.moveTrashRight();
-                    this.gyroMoveCount = 0;
-                }
-            } else if (gamma < -sensitivity) {
-                // Inclinar para esquerda
-                this.gyroMoveCount++;
-                
-                // Definir contador baseado no modo de velocidade
-                let requiredCount = 2; // Padrão
-                if (this.gyroSpeedMode === 'fast') {
-                    requiredCount = 1; // Move imediatamente
-                } else if (this.gyroSpeedMode === 'slow') {
-                    requiredCount = 3; // Move mais lentamente
-                }
-                
-                if (this.gyroMoveCount >= requiredCount) {
-                    this.moveTrashLeft();
-                    this.gyroMoveCount = 0;
-                }
-            } else {
-                // Resetar contador quando não há inclinação
-                this.gyroMoveCount = 0;
-            }
-        };
-        window.addEventListener('deviceorientation', this._gyroListener);
-    }
-    
-    toggleGyroscopeSpeed() {
-        if (!this.gyroscopeActive) return;
-        
-        // Alternar entre velocidades
-        if (!this.gyroSpeedMode) {
-            this.gyroSpeedMode = 'fast';
-            this.showSpeedIndicator('Rápido');
-        } else if (this.gyroSpeedMode === 'fast') {
-            this.gyroSpeedMode = 'slow';
-            this.showSpeedIndicator('Lento');
-        } else {
-            this.gyroSpeedMode = 'normal';
-            this.showSpeedIndicator('Normal');
-        }
-    }
-    
-    showSpeedIndicator(speed) {
-        // Remover indicador anterior se existir
-        const existingIndicator = document.getElementById('speed-indicator');
-        if (existingIndicator) {
-            existingIndicator.remove();
-        }
-        
-        const indicator = document.createElement('div');
-        indicator.id = 'speed-indicator';
-        indicator.innerHTML = `⚡ ${speed}`;
-        indicator.style.cssText = `
-            position: fixed;
-            top: 50px;
-            left: 20px;
-            background: rgba(255, 165, 0, 0.9);
-            color: white;
-            padding: 6px 10px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            animation: fadeInOut 2s ease;
-        `;
-        
-        document.body.appendChild(indicator);
-        
-        // Remover após 2 segundos
-        setTimeout(() => {
-            if (indicator.parentNode) {
-                indicator.remove();
-            }
-        }, 2000);
-    }
+    // Remover todos os métodos relacionados ao giroscópio: setupGyroToggleButton, activateGyroscope, deactivateGyroscope, initGyroscope, addGyroscopeButton, requestGyroscopePermission, startGyroscope, toggleGyroscopeSpeed, showSpeedIndicator
     
     updateDisplay() {
         document.getElementById('score').textContent = this.score;
@@ -802,4 +543,23 @@ document.head.appendChild(style);
 // Inicializar jogo quando a página carregar
 document.addEventListener('DOMContentLoaded', () => {
     new TrashGame();
+
+    // Guia de Lixeiras
+    const guideBtn = document.getElementById('guide-btn');
+    const guideModal = document.getElementById('guide-modal');
+    const closeGuideBtn = document.getElementById('close-guide-btn');
+    if (guideBtn && guideModal && closeGuideBtn) {
+        guideBtn.onclick = () => {
+            guideModal.style.display = 'block';
+        };
+        closeGuideBtn.onclick = () => {
+            guideModal.style.display = 'none';
+        };
+        // Fechar ao clicar fora do modal
+        window.addEventListener('click', (e) => {
+            if (e.target === guideModal) {
+                guideModal.style.display = 'none';
+            }
+        });
+    }
 }); 
