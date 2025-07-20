@@ -100,8 +100,6 @@ class TrashGame {
             window.removeEventListener('deviceorientation', this._gyroListener);
             this._gyroListener = null;
         }
-        const indicator = document.getElementById('gyro-indicator');
-        if (indicator) indicator.remove();
     }
     
     bindEvents() {
@@ -575,11 +573,10 @@ class TrashGame {
     }
     
     startGyroscope() {
-        this.gyroscopeActive = true;
+        if (this._gyroListener) return; // Evita múltiplos listeners
         this.lastGyroTime = 0;
-        this.gyroMoveCount = 0; // Contador para controlar velocidade
-        
-        window.addEventListener('deviceorientation', (event) => {
+        this.gyroMoveCount = 0;
+        this._gyroListener = (event) => {
             if (!this.gameRunning || this.gamePaused || !this.gyroscopeActive) return;
             
             const now = Date.now();
@@ -645,10 +642,8 @@ class TrashGame {
                 // Resetar contador quando não há inclinação
                 this.gyroMoveCount = 0;
             }
-        });
-        
-        // Mostrar indicador de giroscópio ativo
-        this.showGyroscopeIndicator();
+        };
+        window.addEventListener('deviceorientation', this._gyroListener);
     }
     
     toggleGyroscopeSpeed() {
@@ -665,27 +660,6 @@ class TrashGame {
             this.gyroSpeedMode = 'normal';
             this.showSpeedIndicator('Normal');
         }
-    }
-    
-    showGyroscopeIndicator() {
-        const indicator = document.createElement('div');
-        indicator.id = 'gyro-indicator';
-        indicator.innerHTML = '📱 Giroscópio Ativo';
-        indicator.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 255, 0, 0.9);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        `;
-        
-        document.body.appendChild(indicator);
     }
     
     showSpeedIndicator(speed) {
