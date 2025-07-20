@@ -165,11 +165,14 @@ body {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 0;
-    width: 95%;
-    max-width: 600px;
+    width: 100%;
+    max-width: 100%;
     margin: 0 auto;
     align-items: end;
-    position: relative;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 30px;
     z-index: 5;
 }
 .trash-bin {
