@@ -631,9 +631,7 @@ body {
     }
 }
 
-.falling-trash {
-    animation: fall 3s linear;
-}
+
 
 .trash-bin:hover {
     animation: bounce 0.6s ease;

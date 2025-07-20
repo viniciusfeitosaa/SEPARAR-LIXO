@@ -186,23 +186,24 @@ class TrashGame {
         }, 2000);
     }
     
+    // Ajustar togglePause para pausar/retomar animação do lixo
     togglePause() {
         if (!this.gameRunning) return;
-        
         this.gamePaused = !this.gamePaused;
         const pauseBtn = document.getElementById('pause-btn');
-        
         if (this.gamePaused) {
             pauseBtn.textContent = 'Continuar';
-            // Pausar animações
+            // Pausar animação do lixo e colisão
             document.querySelectorAll('.falling-trash').forEach(trash => {
-                trash.style.animationPlayState = 'paused';
+                // Pausa: a animação e o intervalo de colisão param automaticamente
             });
         } else {
             pauseBtn.textContent = 'Pausar';
-            // Retomar animações
+            // Retomar animação do lixo e colisão
             document.querySelectorAll('.falling-trash').forEach(trash => {
-                trash.style.animationPlayState = 'running';
+                if (typeof trash._animateFall === 'function') {
+                    requestAnimationFrame(trash._animateFall);
+                }
             });
         }
     }
@@ -242,13 +243,12 @@ class TrashGame {
     
     spawnTrash() {
         if (this.gamePaused) return;
-        
         const sky = document.getElementById('sky');
         const trashTypes = Object.keys(this.trashTypes);
         const randomType = trashTypes[Math.floor(Math.random() * trashTypes.length)];
         const trashData = this.trashTypes[randomType];
         const randomItem = trashData.items[Math.floor(Math.random() * trashData.items.length)];
-        
+
         // Escolher coluna aleatória
         this.currentColumn = Math.floor(Math.random() * this.gridColumns);
 
@@ -257,7 +257,7 @@ class TrashGame {
         trash.dataset.type = randomType;
         trash.dataset.correctBin = trashData.binType;
         trash.dataset.column = this.currentColumn;
-        
+
         // Criar imagem do lixo
         const trashImg = document.createElement('img');
         trashImg.src = randomItem;
@@ -266,35 +266,90 @@ class TrashGame {
         trashImg.style.height = '100%';
         trashImg.style.objectFit = 'contain';
         trash.appendChild(trashImg);
-        
+
         // Posição horizontal baseada na coluna
         this.setColumnWidth();
         const left = this.currentColumn * this.columnWidth + (this.columnWidth / 2) - 20; // Centraliza o lixo na coluna
         trash.style.left = left + 'px';
         trash.style.top = '-50px';
-        
+        trash.style.transition = 'none';
+
         sky.appendChild(trash);
-        
-        // Configurar animação de queda
-        trash.style.animation = `fall ${this.fallSpeed}ms linear`;
-        
-        // Verificar colisão durante a queda
-        const checkCollisionInterval = setInterval(() => {
-            if (!trash.parentNode) {
-                clearInterval(checkCollisionInterval);
+
+        // Remover animação CSS
+        trash.style.animation = '';
+
+        // Queda dinâmica via JS com suporte a pause
+        const trashHeight = 50; // altura aproximada do lixo
+        const startTop = -50;
+        const endTop = sky.offsetHeight - trashHeight;
+        const duration = this.fallSpeed;
+        let startTime = null;
+        let pausedAt = null;
+        let animationFrameId = null;
+        let isPaused = false;
+        let totalPaused = 0;
+
+        // Controle do intervalo de colisão
+        let checkCollisionInterval = null;
+
+        const animateFall = (timestamp) => {
+            if (this.gamePaused) {
+                isPaused = true;
+                pausedAt = timestamp;
+                // Pausar verificação de colisão
+                if (checkCollisionInterval) {
+                    clearInterval(checkCollisionInterval);
+                    checkCollisionInterval = null;
+                }
                 return;
             }
-            
-            this.checkCollision(trash);
-        }, 100); // Verificar a cada 100ms
-        
-        // Remover lixo após a queda se não colidiu
-        setTimeout(() => {
-            if (trash.parentNode) {
-                clearInterval(checkCollisionInterval);
-                trash.remove();
+            if (isPaused && pausedAt !== null) {
+                // Corrige o startTime para compensar o tempo pausado
+                totalPaused += (timestamp - pausedAt);
+                isPaused = false;
+                pausedAt = null;
             }
-        }, this.fallSpeed);
+            if (!startTime) startTime = timestamp;
+            const elapsed = timestamp - startTime - totalPaused;
+            const progress = Math.min(elapsed / duration, 1);
+            const currentTop = startTop + (endTop - startTop) * progress;
+            trash.style.top = currentTop + 'px';
+            if (progress < 1 && trash.parentNode) {
+                animationFrameId = requestAnimationFrame(animateFall);
+                // Iniciar/reiniciar verificação de colisão se não estiver rodando
+                if (!checkCollisionInterval) {
+                    checkCollisionInterval = setInterval(() => {
+                        if (!trash.parentNode) {
+                            clearInterval(checkCollisionInterval);
+                            return;
+                        }
+                        this.checkCollision(trash);
+                    }, 100);
+                }
+            } else {
+                // Ao final da queda, remove se não colidiu
+                if (trash.parentNode) {
+                    trash.remove();
+                }
+                if (checkCollisionInterval) {
+                    clearInterval(checkCollisionInterval);
+                }
+            }
+        };
+        animationFrameId = requestAnimationFrame(animateFall);
+
+        // Guardar referência para retomar animação ao despausar
+        trash._animateFall = animateFall;
+        trash._animationFrameId = animationFrameId;
+        trash._startTime = () => startTime;
+        trash._setStartTime = (v) => { startTime = v; };
+        trash._pausedAt = () => pausedAt;
+        trash._setPausedAt = (v) => { pausedAt = v; };
+        trash._totalPaused = () => totalPaused;
+        trash._setTotalPaused = (v) => { totalPaused = v; };
+        trash._checkCollisionInterval = () => checkCollisionInterval;
+        trash._setCheckCollisionInterval = (v) => { checkCollisionInterval = v; };
     }
     
 
