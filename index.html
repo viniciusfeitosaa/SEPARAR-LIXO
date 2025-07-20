@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Separação de Lixo - Jogo Educativo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🌍 Separação de Lixo</h1>
+            <div class="score-board">
+                <div class="score">Pontuação: <span id="score">0</span></div>
+                <div class="lives">
+                    <span>Vidas:</span>
+                    <div class="hearts-container" id="hearts-container">
+                        <!-- Os corações serão inseridos aqui via JavaScript -->
+                    </div>
+                </div>
+                <div class="level">Nível: <span id="level">1</span></div>
+                <div class="hits">Acertos: <span id="hits">0</span>/<span id="hits-needed">20</span></div>
+            </div>
+        </header>
+
+        <div class="game-area">
+            <div class="sky" id="sky">
+                <!-- O lixo cairá aqui -->
+            </div>
+            
+            <div class="ground">
+                <div class="trash-bins">
+                    <div class="trash-bin blue" data-type="paper">
+                        <img src="Assets/lixeira-azul.png" alt="Lixeira Azul - Papel" class="bin-image">
+                        <div class="bin-label">Papel</div>
+                    </div>
+                    <div class="trash-bin red" data-type="plastic">
+                        <img src="Assets/lixeira-vermelho.png" alt="Lixeira Vermelha - Plástico" class="bin-image">
+                        <div class="bin-label">Plástico</div>
+                    </div>
+                    <div class="trash-bin green" data-type="glass">
+                        <img src="Assets/lixeira-verde.png" alt="Lixeira Verde - Vidro" class="bin-image">
+                        <div class="bin-label">Vidro</div>
+                    </div>
+                    <div class="trash-bin yellow" data-type="metal">
+                        <img src="Assets/lixeira-amarela.png" alt="Lixeira Amarela - Metal" class="bin-image">
+                        <div class="bin-label">Metal</div>
+                    </div>
+                    <div class="trash-bin brown" data-type="organic">
+                        <img src="Assets/lixeira-marrom.png" alt="Lixeira Marrom - Orgânico" class="bin-image">
+                        <div class="bin-label">Orgânico</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controles touch para mobile -->
+        <div class="mobile-controls">
+            <div class="control-area left-control" id="left-control">
+                <span>←</span>
+            </div>
+            <div class="control-area right-control" id="right-control">
+                <span>→</span>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button id="start-btn" class="btn btn-primary">Iniciar Jogo</button>
+            <button id="pause-btn" class="btn btn-secondary" disabled>Pausar</button>
+            <button id="restart-btn" class="btn btn-secondary" disabled>Reiniciar</button>
+            <button id="gyro-toggle-btn" class="btn btn-secondary gyro-btn" style="min-width:32px; padding:4px 10px; font-size:0.9em; margin-left:6px;">Giroscópio</button>
+        </div>
+
+        <div class="instructions">
+            <h3>Como Jogar:</h3>
+            <p><strong>Desktop:</strong> Use as setas do teclado (← →) para mover o lixo que está caindo!</p>
+            <p><strong>Mobile:</strong> Use os botões na tela ou deslize para mover o lixo!</p>
+        </div>
+    </div>
+
+    <!-- Modal de Game Over -->
+    <div id="game-over-modal" class="modal">
+        <div class="modal-content">
+            <h2>Fim de Jogo!</h2>
+            <p>Sua pontuação final: <span id="final-score">0</span></p>
+            <button id="play-again-btn" class="btn btn-primary">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
