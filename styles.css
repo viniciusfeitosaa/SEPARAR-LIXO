@@ -699,3 +699,22 @@ body {
         font-size: 0.95em;
     }
 } 
+
+@media (max-width: 600px) {
+    .game-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 10px;
+        justify-items: center;
+        align-items: center;
+        width: 100%;
+        margin-top: 10px;
+    }
+    .game-controls .btn {
+        width: 100%;
+        min-width: 0;
+        font-size: 0.95em;
+        padding: 8px 0;
+    }
+} 
