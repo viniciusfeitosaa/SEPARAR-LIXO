@@ -1,4 +1,4 @@
-# 🌍 Jogo de Separação de Lixo
+# 🌍 Jogo de descarte correto de Lixo
 
 Um jogo educativo web para ensinar crianças sobre o descarte correto do lixo. Recriado a partir de um jogo original desenvolvido no Godot.
 
