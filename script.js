@@ -262,8 +262,8 @@ class TrashGame {
         const trashImg = document.createElement('img');
         trashImg.src = randomItem;
         trashImg.alt = 'Lixo';
-        trashImg.style.width = '100%';
-        trashImg.style.height = '100%';
+        trashImg.style.width = '115%';
+        trashImg.style.height = '115%';
         trashImg.style.objectFit = 'contain';
         trash.appendChild(trashImg);
 
@@ -280,9 +280,12 @@ class TrashGame {
         trash.style.animation = '';
 
         // Queda dinâmica via JS com suporte a pause
-        const trashHeight = 50; // altura aproximada do lixo
+        const trashHeight = 70; // altura maior para o lixo
         const startTop = -50;
-        const endTop = sky.offsetHeight - trashHeight;
+        const trashBins = document.querySelector('.trash-bins');
+        const trashBinsRect = trashBins.getBoundingClientRect();
+        const skyRect = sky.getBoundingClientRect();
+        const endTop = trashBinsRect.top - skyRect.top - trashHeight / 2;
         const duration = this.fallSpeed;
         let startTime = null;
         let pausedAt = null;
@@ -479,8 +482,15 @@ class TrashGame {
         bins.forEach((bin, idx) => {
             const binRect = bin.getBoundingClientRect();
             
-            // Checa se o lixo está na mesma coluna da lixeira
-            if (parseInt(trash.dataset.column) === idx && trashRect.bottom >= binRect.top) {
+            // Checa se o lixo está na mesma coluna da lixeira e permite uma margem de tolerância
+            const margem = 15; // tolerância em pixels
+            const trashBase = trashRect.bottom;
+            const binTop = binRect.top;
+            const binBottom = binRect.bottom;
+            if (
+              parseInt(trash.dataset.column) === idx &&
+              trashBase >= binTop - margem && trashBase <= binBottom + margem
+            ) {
                 
                 // Marcar como processado para evitar múltiplas detecções
                 trash.dataset.processed = 'true';
