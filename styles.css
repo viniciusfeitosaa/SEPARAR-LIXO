@@ -85,12 +85,12 @@ body {
 
 .sky {
     position: relative;
-    height: 50vh;
+    height: 70vh;
     min-height: 320px;
     max-height: 600px;
     width: 100%;
     background: linear-gradient(180deg, #b3e0ff 0%, #e0f7fa 60%, #b2ebf2 100%);
-    border-radius: 22px 22px 48px 48px;
+    border-radius: 22px 22px 2px 2px;
     overflow: visible;
     margin-bottom: 0;
     box-shadow: 0 6px 32px rgba(0,0,0,0.13);
@@ -126,7 +126,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 80px;
+    height: 99px;
     background: linear-gradient(180deg, #7ec850 0%, #4e9a06 100%);
     border-radius: 28px 28px 14px 14px;
     box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
