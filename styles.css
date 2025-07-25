@@ -64,6 +64,10 @@ body {
     height: clamp(20px, 3vw, 30px);
     object-fit: contain;
     transition: all 0.3s ease;
+    max-width: 35px;
+    max-height: 35px;
+    min-width: 18px;
+    min-height: 18px;
 }
 
 .heart.lost {
@@ -260,18 +264,22 @@ body {
 
 .falling-trash {
     position: absolute;
-    width: clamp(35px, 5vw, 60px);
-    height: clamp(35px, 5vw, 60px);
+    width: clamp(40px, 6vw, 70px);
+    height: clamp(40px, 6vw, 70px);
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform 0.1s ease, left 0.2s ease;
+    transition: all 0.2s ease;
     z-index: 10;
     background: rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     border: 2px solid #fff;
+    max-width: 80px;
+    max-height: 80px;
+    min-width: 35px;
+    min-height: 35px;
 }
 
 
@@ -547,6 +555,17 @@ body {
         min-height: 350px;
     }
     
+    .hearts-container {
+        gap: 8px;
+    }
+    
+    .heart {
+        width: clamp(25px, 4vw, 35px);
+        height: clamp(25px, 4vw, 35px);
+        max-width: 40px;
+        max-height: 40px;
+    }
+    
     .trash-bins {
         gap: 12px;
     }
@@ -566,8 +585,10 @@ body {
     }
     
     .falling-trash {
-        width: 40px;
-        height: 40px;
+        width: clamp(45px, 7vw, 60px);
+        height: clamp(45px, 7vw, 60px);
+        max-width: 65px;
+        max-height: 65px;
     }
 }
 
@@ -582,8 +603,65 @@ body {
         max-height: 500px;
     }
     
+    .hearts-container {
+        gap: 10px;
+    }
+    
+    .heart {
+        width: clamp(28px, 3.5vw, 40px);
+        height: clamp(28px, 3.5vw, 40px);
+        max-width: 45px;
+        max-height: 45px;
+    }
+    
     .trash-bins {
         gap: 20px;
+    }
+    
+    .falling-trash {
+        width: clamp(50px, 6.5vw, 75px);
+        height: clamp(50px, 6.5vw, 75px);
+        max-width: 80px;
+        max-height: 80px;
+    }
+}
+
+/* Responsividade para tablets em paisagem */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .game-container {
+        max-width: 1200px;
+        padding: 20px;
+    }
+    
+    .game-area {
+        height: 75vh;
+        max-height: 600px;
+    }
+    
+    .hearts-container {
+        gap: 12px;
+    }
+    
+    .heart {
+        width: clamp(30px, 3vw, 45px);
+        height: clamp(30px, 3vw, 45px);
+        max-width: 50px;
+        max-height: 50px;
+    }
+    
+    .trash-bins {
+        gap: 25px;
+    }
+    
+    .falling-trash {
+        width: clamp(55px, 7vw, 80px);
+        height: clamp(55px, 7vw, 80px);
+        max-width: 85px;
+        max-height: 85px;
+    }
+    
+    .score-board {
+        font-size: clamp(1rem, 2.5vw, 1.4rem);
     }
 }
 
@@ -598,8 +676,26 @@ body {
         max-height: 700px;
     }
     
+    .hearts-container {
+        gap: 12px;
+    }
+    
+    .heart {
+        width: clamp(30px, 3vw, 45px);
+        height: clamp(30px, 3vw, 45px);
+        max-width: 50px;
+        max-height: 50px;
+    }
+    
     .trash-bins {
         gap: 30px;
+    }
+    
+    .falling-trash {
+        width: clamp(55px, 7vw, 85px);
+        height: clamp(55px, 7vw, 85px);
+        max-width: 90px;
+        max-height: 90px;
     }
 }
 
@@ -716,5 +812,23 @@ body {
         min-width: 0;
         font-size: 0.95em;
         padding: 8px 0;
+    }
+} 
+
+/* Otimização para displays de alta densidade */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .heart {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+    
+    .falling-trash img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+    
+    .bin-image {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
     }
 } 

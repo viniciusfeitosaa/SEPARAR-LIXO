@@ -53,7 +53,9 @@ class TrashGame {
         this.updateDisplay();
         this.initializeHearts(); // Inicializar corações na primeira carga
         this.setColumnWidth();
-        window.addEventListener('resize', () => this.setColumnWidth());
+        window.addEventListener('resize', () => {
+            this.recalculateSizes();
+        });
         // Removido: this.setupGyroToggleButton();
     }
     
@@ -216,8 +218,8 @@ class TrashGame {
         const trashImg = document.createElement('img');
         trashImg.src = randomItem;
         trashImg.alt = 'Lixo';
-        trashImg.style.width = '115%';
-        trashImg.style.height = '115%';
+        trashImg.style.width = '100%';
+        trashImg.style.height = '100%';
         trashImg.style.objectFit = 'contain';
         trash.appendChild(trashImg);
 
@@ -234,7 +236,7 @@ class TrashGame {
         trash.style.animation = '';
 
         // Queda dinâmica via JS com suporte a pause
-        const trashHeight = 70; // altura maior para o lixo
+        const trashHeight = Math.min(70, window.innerWidth * 0.08); // Altura responsiva baseada na largura da tela
         const startTop = -50;
         const trashBins = document.querySelector('.trash-bins');
         const trashBinsRect = trashBins.getBoundingClientRect();
@@ -516,6 +518,22 @@ class TrashGame {
     setColumnWidth() {
         const sky = document.getElementById('sky');
         this.columnWidth = sky.offsetWidth / this.gridColumns;
+    }
+
+    // Função para recalcular tamanhos responsivos
+    recalculateSizes() {
+        this.setColumnWidth();
+        
+        // Recalcular tamanho do lixo em queda
+        const fallingTrash = document.querySelectorAll('.falling-trash');
+        fallingTrash.forEach(trash => {
+            const trashHeight = Math.min(70, window.innerWidth * 0.08);
+            const trashImg = trash.querySelector('img');
+            if (trashImg) {
+                trashImg.style.width = '100%';
+                trashImg.style.height = '100%';
+            }
+        });
     }
 }
 
